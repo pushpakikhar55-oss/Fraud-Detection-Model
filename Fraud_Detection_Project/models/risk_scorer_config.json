@@ -1,0 +1,32 @@
+{
+  "weights": {
+    "supervised": 0.4,
+    "anomaly": 0.25,
+    "amount_deviation": 0.15,
+    "velocity": 0.1,
+    "novelty": 0.1
+  },
+  "bands": {
+    "LOW": {
+      "min_score": 0.0,
+      "max_score": 30.0,
+      "action": "APPROVE",
+      "description": "Legitimate transaction pattern. Low risk of fraudulent activity.",
+      "friction": "None (Seamless authorization)"
+    },
+    "MEDIUM": {
+      "min_score": 30.01,
+      "max_score": 70.0,
+      "action": "REVIEW",
+      "description": "Suspicious deviation detected. Warranting secondary authorization.",
+      "friction": "Step-up 2FA / OTP challenge or analyst queue"
+    },
+    "HIGH": {
+      "min_score": 70.01,
+      "max_score": 100.0,
+      "action": "BLOCK",
+      "description": "Critical fraud indicators confirmed. High financial loss exposure.",
+      "friction": "Immediate transaction decline & security alert"
+    }
+  }
+}

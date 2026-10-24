@@ -1,0 +1,42 @@
+{
+  "algorithm": "Isolation Forest",
+  "contamination": 0.02,
+  "decision_threshold": 0.7572,
+  "roc_auc": 0.9849,
+  "pr_auc": 0.6303,
+  "precision": 0.5533,
+  "recall": 0.7217,
+  "f1": 0.6264,
+  "scenario_capture": {
+    "amount_spike": {
+      "total": 23,
+      "detected": 18,
+      "recall_pct": 78.26,
+      "mean_anomaly_score": 0.8666
+    },
+    "device_location_anomaly": {
+      "total": 25,
+      "detected": 15,
+      "recall_pct": 60.0,
+      "mean_anomaly_score": 0.7574
+    },
+    "nocturnal_anomaly": {
+      "total": 22,
+      "detected": 16,
+      "recall_pct": 72.73,
+      "mean_anomaly_score": 0.8663
+    },
+    "rapid_balance_drain": {
+      "total": 21,
+      "detected": 19,
+      "recall_pct": 90.48,
+      "mean_anomaly_score": 0.9133
+    },
+    "velocity_burst": {
+      "total": 24,
+      "detected": 15,
+      "recall_pct": 62.5,
+      "mean_anomaly_score": 0.775
+    }
+  }
+}

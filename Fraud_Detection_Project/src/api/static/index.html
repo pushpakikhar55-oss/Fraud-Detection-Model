@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegis AI — Financial Fraud Detection Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            AEGIS <span class="text-sky-400 font-semibold text-sm bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800/60">FRAUD AI</span>
+          </span>
+          <p class="text-xs text-slate-400">Enterprise Risk Engine & Explainable Intelligence</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2 bg-emerald-950/50 border border-emerald-800/60 px-3 py-1.5 rounded-full text-xs text-emerald-400">
+          <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>XGBoost & Isolation Forest Active</span>
+        </div>
+        <a href="/docs" target="_blank" class="text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-code"></i>
+          <span>Swagger API</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI Summary Section -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="kpiSection">
+      <!-- Total Monitored -->
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium uppercase tracking-wider">Monitored Volume</span>
+          <i class="fa-solid fa-receipt text-sky-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-white" id="kpiTotalTx">--</div>
+        <div class="text-xs text-slate-400 mt-1">Real-time settlement stream</div>
+      </div>
+
+      <!-- High Risk Blocked -->
+      <div class="bg-slate-800/60 border border-rose-900/40 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium uppercase tracking-wider text-rose-300">High Risk Blocked</span>
+          <i class="fa-solid fa-ban text-rose-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-rose-400" id="kpiBlocked">--</div>
+        <div class="text-xs text-rose-300/70 mt-1">Score ≥ 71 (Decline & Alert)</div>
+      </div>
+
+      <!-- Suspicious Review -->
+      <div class="bg-slate-800/60 border border-amber-900/40 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium uppercase tracking-wider text-amber-300">Review Queue</span>
+          <i class="fa-solid fa-user-shield text-amber-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-amber-400" id="kpiReview">--</div>
+        <div class="text-xs text-amber-300/70 mt-1">Score 31–70 (Step-Up 2FA)</div>
+      </div>
+
+      <!-- Low Risk Approved -->
+      <div class="bg-slate-800/60 border border-emerald-900/40 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium uppercase tracking-wider text-emerald-300">Instant Approved</span>
+          <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-emerald-400" id="kpiApproved">--</div>
+        <div class="text-xs text-emerald-300/70 mt-1">Score 0–30 (Friction-Free)</div>
+      </div>
+
+      <!-- Loss Exposure Prevented -->
+      <div class="bg-slate-800/60 border border-sky-900/40 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium uppercase tracking-wider text-sky-300">Loss Prevented</span>
+          <i class="fa-solid fa-dollar-sign text-sky-400"></i>
+        </div>
+        <div class="text-2xl font-bold text-sky-300" id="kpiLossSaved">--</div>
+        <div class="text-xs text-sky-300/70 mt-1">Capital saved from blocks</div>
+      </div>
+    </section>
+
+    <!-- Row 2: Live Simulator & Alert Queue -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Interactive Transaction Risk Simulator (7 Cols) -->
+      <section class="lg:col-span-7 bg-slate-800/60 border border-slate-700/60 rounded-xl p-6 shadow-md">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-700/60 pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i>
+              Real-Time Transaction Risk Simulator
+            </h2>
+            <p class="text-xs text-slate-400">Test hypothetical transaction parameters against the full AI engine.</p>
+          </div>
+          <!-- Quick Presets -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-slate-400">Presets:</span>
+            <button onclick="loadPreset('normal')" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-slate-200 transition">Normal</button>
+            <button onclick="loadPreset('nocturnal')" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-slate-200 transition">Night Wire</button>
+            <button onclick="loadPreset('spike')" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-slate-200 transition">Drain</button>
+          </div>
+        </div>
+
+        <form id="simulatorForm" onsubmit="handleSimulate(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Amount ($)</label>
+              <input type="number" id="simAmount" value="85.00" step="0.01" min="1" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Customer Avg ($)</label>
+              <input type="number" id="simHistMean" value="75.00" step="0.01" min="1" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Account Balance ($)</label>
+              <input type="number" id="simBalance" value="3500.00" step="0.01" min="0" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Transaction Type</label>
+              <select id="simType" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+                <option value="PAYMENT">PAYMENT</option>
+                <option value="TRANSFER">TRANSFER (High Risk)</option>
+                <option value="CASH_OUT">CASH_OUT (High Risk)</option>
+                <option value="DEBIT">DEBIT</option>
+                <option value="CASH_IN">CASH_IN</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Payment Method</label>
+              <select id="simMethod" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+                <option value="credit_card">Credit Card</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="digital_wallet">Digital Wallet</option>
+                <option value="upi">UPI</option>
+                <option value="debit_card">Debit Card</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Velocity (1h Count)</label>
+              <input type="number" id="simVelocity" value="1" min="1" max="20" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+
+          <!-- Risk Context Toggles -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <label class="flex items-center space-x-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/80 cursor-pointer text-xs">
+              <input type="checkbox" id="simNight" class="rounded text-sky-500 focus:ring-0">
+              <span>Nocturnal (2 AM)</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/80 cursor-pointer text-xs">
+              <input type="checkbox" id="simNewDevice" class="rounded text-sky-500 focus:ring-0">
+              <span>New Device</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/80 cursor-pointer text-xs">
+              <input type="checkbox" id="simNewLoc" class="rounded text-sky-500 focus:ring-0">
+              <span>New Location</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/80 cursor-pointer text-xs">
+              <input type="checkbox" id="simCardNotPresent" class="rounded text-sky-500 focus:ring-0">
+              <span>Card Not Present</span>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold py-2.5 px-4 rounded-lg shadow-lg shadow-sky-500/25 transition duration-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Evaluate Transaction with AI Pipeline</span>
+          </button>
+        </form>
+
+        <!-- Live Result Banner -->
+        <div id="simResultBox" class="mt-6 hidden border rounded-xl p-5 bg-slate-900/90 transition-all duration-300">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div class="flex items-center space-x-4">
+              <div id="simScoreCircle" class="w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl border-4 shadow-lg">
+                --
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 uppercase tracking-wide">Composite Risk Score</div>
+                <div id="simBandBadge" class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mt-1">
+                  --
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-400">Automated Policy Action</div>
+              <div id="simActionBadge" class="text-base font-bold uppercase mt-0.5">--</div>
+            </div>
+          </div>
+
+          <!-- Component Breakdown Progress Bars -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-xs">
+            <div class="bg-slate-800/80 p-2.5 rounded">
+              <span class="text-slate-400 block mb-1">Supervised ML</span>
+              <span class="font-bold text-sky-300" id="simCompSup">--</span>
+            </div>
+            <div class="bg-slate-800/80 p-2.5 rounded">
+              <span class="text-slate-400 block mb-1">Anomaly Det.</span>
+              <span class="font-bold text-indigo-300" id="simCompAnom">--</span>
+            </div>
+            <div class="bg-slate-800/80 p-2.5 rounded">
+              <span class="text-slate-400 block mb-1">Amount Dev.</span>
+              <span class="font-bold text-amber-300" id="simCompAmt">--</span>
+            </div>
+            <div class="bg-slate-800/80 p-2.5 rounded">
+              <span class="text-slate-400 block mb-1">Velocity</span>
+              <span class="font-bold text-emerald-300" id="simCompVel">--</span>
+            </div>
+          </div>
+
+          <!-- Narrative Reasons -->
+          <div class="mt-4 pt-3 border-t border-slate-800">
+            <div class="text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb text-amber-400"></i>
+              <span>AI Narrative Justification (Explainable AI):</span>
+            </div>
+            <ul id="simNarrativeList" class="space-y-1 text-xs text-slate-300">
+              <!-- Dynamically Populated -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- High-Risk Security Alert Queue (5 Cols) -->
+      <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 rounded-xl p-6 shadow-md flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-700/60 pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+              Security Alert Center
+            </h2>
+            <p class="text-xs text-slate-400">High-risk transactions awaiting analyst triage.</p>
+          </div>
+          <button onclick="fetchAlerts()" class="text-xs text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+
+        <div id="alertsContainer" class="flex-1 space-y-3 overflow-y-auto max-h-[460px] pr-1">
+          <!-- Alert cards inserted via JS -->
+          <div class="text-center py-12 text-slate-400 text-xs">Loading active alerts...</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Row 3: Transaction Ledger & Search Explorer -->
+    <section class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-6 shadow-md">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-slate-700/60 pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-sky-400"></i>
+            Transaction Ledger & Audit Trail
+          </h2>
+          <p class="text-xs text-slate-400">Filter, inspect, and drill down into individual transaction attributions.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <!-- Risk Band Filters -->
+          <div class="inline-flex rounded-lg bg-slate-900 p-1 border border-slate-700 text-xs">
+            <button onclick="setRiskFilter('ALL')" id="filterAll" class="px-3 py-1 rounded font-medium bg-slate-700 text-white">All</button>
+            <button onclick="setRiskFilter('HIGH')" id="filterHigh" class="px-3 py-1 rounded font-medium text-slate-400 hover:text-white">High</button>
+            <button onclick="setRiskFilter('MEDIUM')" id="filterMed" class="px-3 py-1 rounded font-medium text-slate-400 hover:text-white">Medium</button>
+            <button onclick="setRiskFilter('LOW')" id="filterLow" class="px-3 py-1 rounded font-medium text-slate-400 hover:text-white">Low</button>
+          </div>
+
+          <!-- Search Box -->
+          <div class="relative flex-1 sm:w-64">
+            <input type="text" id="searchInput" placeholder="Search ID, customer, city..." oninput="debounceSearch()" class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500">
+            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-700">
+            <tr>
+              <th class="py-3 px-4">Transaction ID</th>
+              <th class="py-3 px-4">Customer</th>
+              <th class="py-3 px-4">Type</th>
+              <th class="py-3 px-4">Amount</th>
+              <th class="py-3 px-4">Risk Score</th>
+              <th class="py-3 px-4">Band</th>
+              <th class="py-3 px-4">Action</th>
+              <th class="py-3 px-4 text-right">Inspect</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsTbody" class="divide-y divide-slate-800">
+            <tr>
+              <td colspan="8" class="text-center py-8 text-slate-500">Loading ledger data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between pt-4 border-t border-slate-700/60 text-xs text-slate-400">
+        <span id="pageInfo">Showing 0 to 0 of 0 entries</span>
+        <div class="space-x-2">
+          <button onclick="prevPage()" id="btnPrev" class="px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-40" disabled>Previous</button>
+          <button onclick="nextPage()" id="btnNext" class="px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-white disabled:opacity-40">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 4: Analytics Visualizations -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-6 shadow-md">
+        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie text-sky-400"></i>
+          Risk Band Distribution
+        </h3>
+        <p class="text-xs text-slate-400 mb-4">Volume breakdown across operational decision tiers.</p>
+        <div class="h-64 flex items-center justify-center">
+          <canvas id="chartRiskBand"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-6 shadow-md">
+        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-chart-bar text-indigo-400"></i>
+          Fraud Incident Rate by Transaction Channel
+        </h3>
+        <p class="text-xs text-slate-400 mb-4">Total volume vs confirmed fraud across financial channels.</p>
+        <div class="h-64 flex items-center justify-center">
+          <canvas id="chartTxType"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Transaction Explainability Modal -->
+  <div id="inspectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-sky-950 border border-sky-800/60 text-sky-400 rounded-lg">
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white" id="modalTxId">TXN Details</h3>
+            <p class="text-xs text-slate-400">Local SHAP Explainability & Attribution</p>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Metadata Overview -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-800/60 p-3 rounded-xl text-xs">
+          <div><span class="text-slate-400 block">Amount</span><span class="font-bold text-white" id="modalAmount">--</span></div>
+          <div><span class="text-slate-400 block">Type</span><span class="font-bold text-white" id="modalType">--</span></div>
+          <div><span class="text-slate-400 block">Customer</span><span class="font-bold text-white" id="modalCustomer">--</span></div>
+          <div><span class="text-slate-400 block">Risk Score</span><span class="font-bold text-white" id="modalScore">--</span></div>
+        </div>
+
+        <!-- Narrative Explanations -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Natural Language Justification
+          </h4>
+          <ul id="modalNarrativeList" class="space-y-1.5 text-xs text-slate-200">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+
+        <!-- Top SHAP Risk Drivers -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-sky-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt"></i>
+            Top SHAP Feature Attributions
+          </h4>
+          <div id="modalShapBars" class="space-y-2 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard JavaScript Application -->
+  <script>
+    let currentLimit = 15;
+    let currentOffset = 0;
+    let currentBand = 'ALL';
+    let currentSearch = '';
+    let searchTimer = null;
+    let chartBandInstance = null;
+    let chartTypeInstance = null;
+
+    // Presets for Simulator
+    function loadPreset(type) {
+      if (type === 'normal') {
+        document.getElementById('simAmount').value = '42.50';
+        document.getElementById('simHistMean').value = '55.00';
+        document.getElementById('simBalance').value = '2400.00';
+        document.getElementById('simType').value = 'PAYMENT';
+        document.getElementById('simMethod').value = 'credit_card';
+        document.getElementById('simVelocity').value = '1';
+        document.getElementById('simNight').checked = false;
+        document.getElementById('simNewDevice').checked = false;
+        document.getElementById('simNewLoc').checked = false;
+        document.getElementById('simCardNotPresent').checked = false;
+      } else if (type === 'nocturnal') {
+        document.getElementById('simAmount').value = '3800.00';
+        document.getElementById('simHistMean').value = '120.00';
+        document.getElementById('simBalance').value = '4200.00';
+        document.getElementById('simType').value = 'TRANSFER';
+        document.getElementById('simMethod').value = 'bank_transfer';
+        document.getElementById('simVelocity').value = '2';
+        document.getElementById('simNight').checked = true;
+        document.getElementById('simNewDevice').checked = true;
+        document.getElementById('simNewLoc').checked = true;
+        document.getElementById('simCardNotPresent').checked = true;
+      } else if (type === 'spike') {
+        document.getElementById('simAmount').value = '9800.00';
+        document.getElementById('simHistMean').value = '180.00';
+        document.getElementById('simBalance').value = '10000.00';
+        document.getElementById('simType').value = 'CASH_OUT';
+        document.getElementById('simMethod').value = 'bank_transfer';
+        document.getElementById('simVelocity').value = '3';
+        document.getElementById('simNight').checked = true;
+        document.getElementById('simNewDevice').checked = true;
+        document.getElementById('simNewLoc').checked = false;
+        document.getElementById('simCardNotPresent').checked = true;
+      }
+    }
+
+    // Initialize Dashboard on Load
+    window.addEventListener('DOMContentLoaded', async () => {
+      await fetchAnalytics();
+      await fetchAlerts();
+      await fetchTransactions();
+    });
+
+    // 1. Fetch Analytics & Render Charts
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch('/api/analytics');
+        const data = await res.json();
+
+        document.getElementById('kpiTotalTx').innerText = data.total_transactions.toLocaleString();
+        document.getElementById('kpiBlocked').innerText = data.high_risk_blocked_count.toLocaleString();
+        document.getElementById('kpiReview').innerText = data.suspicious_review_count.toLocaleString();
+        document.getElementById('kpiApproved').innerText = data.low_risk_approved_count.toLocaleString();
+        document.getElementById('kpiLossSaved').innerText = '$' + data.loss_prevented_usd.toLocaleString();
+
+        renderCharts(data);
+      } catch (err) {
+        console.error("Failed to load analytics:", err);
+      }
+    }
+
+    // 2. Fetch Alerts
+    async function fetchAlerts() {
+      try {
+        const res = await fetch('/api/alerts?limit=10');
+        const alerts = await res.json();
+        const container = document.getElementById('alertsContainer');
+
+        if (!alerts || alerts.length === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">No active security alerts. Platform safe.</div>';
+          return;
+        }
+
+        container.innerHTML = alerts.map(a => `
+          <div class="bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 rounded-xl p-3.5 transition">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-mono text-[11px] font-bold text-sky-400">${a.transaction_id}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.risk_score >= 85 ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-amber-950 text-amber-300 border border-amber-800'}">
+                ${a.severity} (${a.risk_score})
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-300 mb-2">
+              <span>$${parseFloat(a.amount).toFixed(2)} &bull; ${a.transaction_type}</span>
+              <span class="text-slate-400 text-[11px]">${a.customer_id}</span>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-[11px]">
+              <span class="text-slate-400">Status: <strong class="text-slate-200">${a.status}</strong></span>
+              <div class="space-x-1.5">
+                <button onclick="resolveAlert(${a.alert_id}, 'CONFIRMED_FRAUD')" class="bg-rose-900/60 hover:bg-rose-800 text-rose-200 px-2 py-0.5 rounded text-[10px] transition">Confirm</button>
+                <button onclick="resolveAlert(${a.alert_id}, 'RESOLVED')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] transition">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to fetch alerts:", err);
+      }
+    }
+
+    async function resolveAlert(alertId, status) {
+      try {
+        await fetch(`/api/alerts/${alertId}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ status: status })
+        });
+        await fetchAlerts();
+        await fetchAnalytics();
+      } catch (err) {
+        alert("Could not update alert: " + err);
+      }
+    }
+
+    // 3. Fetch Transactions
+    async function fetchTransactions() {
+      try {
+        let url = `/api/transactions?limit=${currentLimit}&offset=${currentOffset}`;
+        if (currentBand !== 'ALL') url += `&risk_band=${currentBand}`;
+        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const tbody = document.getElementById('transactionsTbody');
+
+        if (!data.transactions || data.transactions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-500">No matching transactions found.</td></tr>';
+          document.getElementById('pageInfo').innerText = `0 of 0 entries`;
+          return;
+        }
+
+        tbody.innerHTML = data.transactions.map(t => {
+          let badgeColor = 'bg-emerald-950/80 text-emerald-300 border-emerald-800';
+          if (t.risk_band === 'HIGH') badgeColor = 'bg-rose-950/80 text-rose-300 border-rose-800';
+          else if (t.risk_band === 'MEDIUM') badgeColor = 'bg-amber-950/80 text-amber-300 border-amber-800';
+
+          return `
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-3 px-4 font-mono font-medium text-slate-200">${t.transaction_id}</td>
+              <td class="py-3 px-4 text-slate-400">${t.customer_id}</td>
+              <td class="py-3 px-4"><span class="bg-slate-800 px-2 py-0.5 rounded font-mono text-[11px]">${t.transaction_type}</span></td>
+              <td class="py-3 px-4 font-semibold text-white">$${parseFloat(t.amount).toFixed(2)}</td>
+              <td class="py-3 px-4 font-bold ${t.risk_score >= 70 ? 'text-rose-400' : (t.risk_score >= 30 ? 'text-amber-400' : 'text-emerald-400')}">${t.risk_score}</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full border text-[10px] font-bold ${badgeColor}">${t.risk_band}</span>
+              </td>
+              <td class="py-3 px-4 text-slate-300 font-medium">${t.recommended_action}</td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="inspectTransaction('${t.transaction_id}')" class="text-sky-400 hover:text-sky-300 font-medium hover:underline">
+                  <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const start = currentOffset + 1;
+        const end = Math.min(currentOffset + currentLimit, data.total);
+        document.getElementById('pageInfo').innerText = `Showing ${start} to ${end} of ${data.total.toLocaleString()} entries`;
+        document.getElementById('btnPrev').disabled = currentOffset === 0;
+        document.getElementById('btnNext').disabled = currentOffset + currentLimit >= data.total;
+
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+      }
+    }
+
+    function setRiskFilter(band) {
+      currentBand = band;
+      currentOffset = 0;
+      ['filterAll', 'filterHigh', 'filterMed', 'filterLow'].forEach(id => {
+        document.getElementById(id).className = "px-3 py-1 rounded font-medium text-slate-400 hover:text-white";
+      });
+      if (band === 'ALL') document.getElementById('filterAll').className = "px-3 py-1 rounded font-medium bg-slate-700 text-white";
+      if (band === 'HIGH') document.getElementById('filterHigh').className = "px-3 py-1 rounded font-medium bg-rose-900 text-white";
+      if (band === 'MEDIUM') document.getElementById('filterMed').className = "px-3 py-1 rounded font-medium bg-amber-900 text-white";
+      if (band === 'LOW') document.getElementById('filterLow').className = "px-3 py-1 rounded font-medium bg-emerald-900 text-white";
+      fetchTransactions();
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        currentSearch = document.getElementById('searchInput').value;
+        currentOffset = 0;
+        fetchTransactions();
+      }, 300);
+    }
+
+    function prevPage() {
+      if (currentOffset >= currentLimit) {
+        currentOffset -= currentLimit;
+        fetchTransactions();
+      }
+    }
+
+    function nextPage() {
+      currentOffset += currentLimit;
+      fetchTransactions();
+    }
+
+    // 4. Live Simulator
+    async function handleSimulate(event) {
+      event.preventDefault();
+      const payload = {
+        amount: parseFloat(document.getElementById('simAmount').value),
+        customer_hist_mean: parseFloat(document.getElementById('simHistMean').value),
+        old_balance: parseFloat(document.getElementById('simBalance').value),
+        transaction_type: document.getElementById('simType').value,
+        payment_method: document.getElementById('simMethod').value,
+        tx_count_1h: parseInt(document.getElementById('simVelocity').value),
+        is_night: document.getElementById('simNight').checked ? 1 : 0,
+        is_new_device: document.getElementById('simNewDevice').checked ? 1 : 0,
+        is_new_location: document.getElementById('simNewLoc').checked ? 1 : 0,
+        card_present: document.getElementById('simCardNotPresent').checked ? 0 : 1,
+      };
+
+      try {
+        const res = await fetch('/api/predict', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        // Render result box
+        const box = document.getElementById('simResultBox');
+        box.classList.remove('hidden');
+
+        const circle = document.getElementById('simScoreCircle');
+        circle.innerText = data.risk_score;
+
+        const bandBadge = document.getElementById('simBandBadge');
+        const actionBadge = document.getElementById('simActionBadge');
+
+        bandBadge.innerText = data.risk_band + " RISK";
+        actionBadge.innerText = data.recommended_action;
+
+        if (data.risk_band === 'HIGH') {
+          circle.className = "w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl border-4 shadow-lg border-rose-500 text-rose-400 bg-rose-950/40 shadow-rose-500/20";
+          bandBadge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mt-1 bg-rose-900/60 text-rose-300 border border-rose-700";
+          actionBadge.className = "text-base font-bold uppercase mt-0.5 text-rose-400";
+        } else if (data.risk_band === 'MEDIUM') {
+          circle.className = "w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl border-4 shadow-lg border-amber-500 text-amber-400 bg-amber-950/40 shadow-amber-500/20";
+          bandBadge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mt-1 bg-amber-900/60 text-amber-300 border border-amber-700";
+          actionBadge.className = "text-base font-bold uppercase mt-0.5 text-amber-400";
+        } else {
+          circle.className = "w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl border-4 shadow-lg border-emerald-500 text-emerald-400 bg-emerald-950/40 shadow-emerald-500/20";
+          bandBadge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mt-1 bg-emerald-900/60 text-emerald-300 border border-emerald-700";
+          actionBadge.className = "text-base font-bold uppercase mt-0.5 text-emerald-400";
+        }
+
+        document.getElementById('simCompSup').innerText = data.scoring_components.supervised_component + " pts";
+        document.getElementById('simCompAnom').innerText = data.scoring_components.anomaly_component + " pts";
+        document.getElementById('simCompAmt').innerText = data.scoring_components.amount_deviation_component + " pts";
+        document.getElementById('simCompVel').innerText = data.scoring_components.velocity_component + " pts";
+
+        const nList = document.getElementById('simNarrativeList');
+        nList.innerHTML = data.narrative_reasons.map(r => `
+          <li class="flex items-start gap-2">
+            <span class="text-amber-400">&bull;</span>
+            <span>${r}</span>
+          </li>
+        `).join('');
+
+      } catch (err) {
+        alert("Prediction failed: " + err);
+      }
+    }
+
+    // 5. Inspect Transaction Details Modal
+    async function inspectTransaction(txId) {
+      try {
+        const res = await fetch(`/api/transactions/${txId}`);
+        const tx = await res.json();
+
+        document.getElementById('modalTxId').innerText = tx.transaction_id;
+        document.getElementById('modalAmount').innerText = '$' + parseFloat(tx.amount).toFixed(2);
+        document.getElementById('modalType').innerText = tx.transaction_type;
+        document.getElementById('modalCustomer').innerText = tx.customer_id;
+        document.getElementById('modalScore').innerText = `${tx.risk_score} (${tx.risk_band})`;
+
+        const exp = tx.explanation || {};
+        const nList = document.getElementById('modalNarrativeList');
+        if (exp.narrative_reasons && exp.narrative_reasons.length > 0) {
+          nList.innerHTML = exp.narrative_reasons.map(r => `<li>&bull; ${r}</li>`).join('');
+        } else {
+          nList.innerHTML = '<li>&bull; Transaction conformed to habitual baselines without significant risk elevation.</li>';
+        }
+
+        const shapContainer = document.getElementById('modalShapBars');
+        if (exp.top_risk_drivers && exp.top_risk_drivers.length > 0) {
+          shapContainer.innerHTML = exp.top_risk_drivers.map(d => `
+            <div>
+              <div class="flex justify-between text-[11px] mb-0.5">
+                <span class="font-mono text-slate-300">${d.feature}</span>
+                <span class="text-rose-400 font-bold">+${parseFloat(d.shap_value).toFixed(3)}</span>
+              </div>
+              <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full" style="width: ${Math.min(100, Math.abs(d.shap_value) * 25)}%"></div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          shapContainer.innerHTML = '<div class="text-slate-500">No elevated risk drivers present.</div>';
+        }
+
+        document.getElementById('inspectModal').classList.remove('hidden');
+      } catch (err) {
+        alert("Failed to load details: " + err);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('inspectModal').classList.add('hidden');
+    }
+
+    // 6. Render Charts
+    function renderCharts(data) {
+      // Risk Band Doughnut
+      const ctxBand = document.getElementById('chartRiskBand').getContext('2d');
+      if (chartBandInstance) chartBandInstance.destroy();
+
+      chartBandInstance = new Chart(ctxBand, {
+        type: 'doughnut',
+        data: {
+          labels: ['Low Risk (Approve)', 'Medium Risk (Review)', 'High Risk (Block)'],
+          datasets: [{
+            data: [
+              data.band_distribution.LOW || 0,
+              data.band_distribution.MEDIUM || 0,
+              data.band_distribution.HIGH || 0,
+            ],
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } }
+          }
+        }
+      });
+
+      // Transaction Type Bar
+      const ctxType = document.getElementById('chartTxType').getContext('2d');
+      if (chartTypeInstance) chartTypeInstance.destroy();
+
+      const labels = data.transaction_type_breakdown.map(t => t.transaction_type);
+      const totalVol = data.transaction_type_breakdown.map(t => t.count);
+      const fraudVol = data.transaction_type_breakdown.map(t => t.fraud_count);
+
+      chartTypeInstance = new Chart(ctxType, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Total Transactions', data: totalVol, backgroundColor: '#0284c7' },
+            { label: 'Confirmed Fraud', data: fraudVol, backgroundColor: '#f43f5e' },
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+          },
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
