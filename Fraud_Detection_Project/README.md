@@ -8,17 +8,17 @@ An enterprise-grade, end-to-end Financial Fraud Detection Platform featuring sup
 
 ```mermaid
 graph TD
-    A[Raw Transaction Ingestion] --> B[Data Preprocessing & Cleaning]
-    B --> C[Behavioral & Velocity Feature Engineering]
-    C --> D[Temporal Train / Val / Test Partitioning]
-    D --> E[Categorical Encoding & Robust Scaling]
-    E --> F[Supervised Classification (Phase 2)]
-    E --> G[Anomaly Detection Engine (Phase 2)]
-    F --> H[Hybrid Risk Scoring 0-100 (Phase 3)]
+    A["Raw Transaction Ingestion"] --> B["Data Preprocessing & Cleaning"]
+    B --> C["Behavioral & Velocity Feature Engineering"]
+    C --> D["Temporal Train / Val / Test Partitioning"]
+    D --> E["Categorical Encoding & Robust Scaling"]
+    E --> F["Supervised Classification (Phase 2)"]
+    E --> G["Anomaly Detection Engine (Phase 2)"]
+    F --> H["Hybrid Risk Scoring 0-100 (Phase 3)"]
     G --> H
-    H --> I[Explainable AI - SHAP/LIME (Phase 3)]
-    H --> J[FastAPI Backend REST Service (Phase 4)]
-    J --> K[Interactive Admin Dashboard (Phase 4)]
+    H --> I["Explainable AI - SHAP/LIME (Phase 3)"]
+    H --> J["FastAPI Backend REST Service (Phase 4)"]
+    J --> K["Interactive Admin Dashboard (Phase 4)"]
 ```
 
 ---
